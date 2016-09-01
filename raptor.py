@@ -1,12 +1,13 @@
 import sys
 import getopt
 import subprocess
+import fs_tests
 
 #List of tests to perform. These are defined by the CIS hardening guidelines for CentOS Linux 07
 FILESYSTEMS = True
 
-#Arguments for main set the tests which are to be disbaled
-def main():
+
+def main():                     #Arguments for main set the tests which are to be disbaled
 	global FILESYSTEMS
 
 	if len(sys.argv) == 1:
@@ -20,38 +21,48 @@ def main():
 		FILESYSTEMS = False
 
 	if "runtest" in str(sys.argv):
-		initTest()
+		init_test()
 
-def initTest():
-	global FILESYSTEMS
+
+def init_test():                 #The main testing phase
+	
+	global FILESYSTEMS           #Relocalization of Global Variables
+
+	FSTESTS = 8.0                #Total number of filesystem tests
+	FSPASS = 0.0                 #Total number of tests passed
+	
 
 	if FILESYSTEMS == True:
-		filesystemGrade = filesystemTest()
-		print (filesystemGrade)
 
-def filesystemTest():
-	passedCramfs = True
-	try:
-		cramfsTest1 = subprocess.check_output(('modprobe', '-n', '-v', 'cramfs'))
-		if cramfsTest1 == "install /bin/true":
-			print(passedCramfs)
-		else:
-			passedCramfs = False
-		cramfsTest2 = subprocess.Popen(('lsmod'), stdout=subprocess.PIPE)
-		try:
-			cramfsTest2Output = subprocess.check_output(('grep', 'cramfs'), stdin=cramfsTest2.stdout)
-			passedCramfs = False
-		except subprocess.CalledProcessError as e:
-			if str(e) != "Command '('grep', 'cramfs')' returned non-zero exit status 1":
-				passedCramfs = False
-				print str(e)
-			
+		#Tests for mountable filesystems
+		#-------------------------------
+		if fs_tests.mounting("cramfs"):
+			FSPASS += 1
+		if fs_tests.mounting("freevxfs"):
+			FSPASS += 1
+		if fs_tests.mounting("hfs"):
+			FSPASS += 1
+		if fs_tests.mounting("hfsplus"):
+			FSPASS += 1
+		if fs_tests.mounting("squashfs"):
+			FSPASS +=1
+		if fs_tests.mounting("udf"):
+			FSPASS += 1
+		if fs_tests.mounting("vfat"):
+			FSPASS += 1
+		
+		#Tests for world-writable directories
+		#------------------------------------
+		if fs_tests.partition("/tmp"):
+			FSPASS += 1
 
-	except OSError:
-		print "No such file or directory"
-		passedCramfs = False
+	FSGRADE = FSPASS/FSTESTS * 100
+	print ("Filesystem overall score = {}".format(FSGRADE))
 
-	return passedCramfs
-	
+
+def report(str):
+	print(str)
+
+
 if __name__ == "__main__":
 	main()
