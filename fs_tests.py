@@ -8,14 +8,35 @@ from raptor import report
 #is not needed, it should be disabled.
 
 def mounting( fs ):
-	passedTest = True
+
+	passedTest = True                  #Guilty until proven innocent!
+
 	print("Validating that {} support is disabled...".format(fs))
+
+	#In order to run the tests, a try catch block is set up to ensure the neede commands
+	#are available on the system.
+
 	try:
+
+		#Input:
+		#>>> modprobe -n -v `fs`
+		#Expected output:
+		#>>> install /bin/true
+
 		fsTest1 = subprocess.check_output(('modprobe', '-n', '-v', fs))
 		if "install /bin/true" not in fsTest1:
 			report("(X)...Support for mounting {} is not disabled.".format(fs))
 			passedTest = False
+
+		#Input:
+		#>>> lsmod | grep `fs`
+		#Expected output:
+		#<NONE>
+
 		fsTest2 = subprocess.Popen(('lsmod'), stdout=subprocess.PIPE)
+
+		#With grep piping, a try catch block is needed to guarantee that if the grep
+		#returns no results, the process will not fail.
 		try:
 			fsTest2Output = subprocess.check_output(('grep', fs), stdin=fsTest2.stdout)
 			passedTest = False
@@ -24,15 +45,18 @@ def mounting( fs ):
 			if str(e) != "Command '('grep', '{}')' returned non-zero exit status 1".format(fs):
 				passedTest = False
 			
-
-	except OSError:
+	except OSError as e:                    #Catch if any of our commands fail
 		report("(!)...Tools do not support running a scan for {}".format(fs))
+		print(e)
 		passedTest = False
 
+	#If passedTest has been set by any of the checks, the test fails
 	if passedTest == True:
 		print("......Passed!")
 	else:
 		print("......Failed!")
+
+	#Send up the result
 	return passedTest
 
 def partition( d ):
