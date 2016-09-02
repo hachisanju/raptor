@@ -45,6 +45,9 @@ def main():                     #Arguments for main set the tests which are to b
 	if "-ignm" in str(sys.argv):
 		report.set_mitigation(False)
 
+	if "-igne" in str(sys.argv):
+		report.set_error(False)
+
 	if "runtest" in str(sys.argv):
 		init_test()
 
@@ -129,8 +132,12 @@ def init_test():                 #The main testing phase
 			report.error(tmpResults.errorstatus)
 		report.report ("\n")
 
-	FSGRADE = FSPASS/FSTESTS * 100
-	print ("Filesystem overall score = {}".format(FSGRADE))
+	if FSTESTS != 0:
+		FSGRADE = FSPASS/FSTESTS * 100
+		print ("Filesystem overall score = {}".format(FSGRADE))
+	else:
+		report.report("No tests were run successfully. Are you running on the correct operating system?")
+	
 
 
 

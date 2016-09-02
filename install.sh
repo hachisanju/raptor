@@ -25,7 +25,7 @@ echo "8888888b.                 888
                   888                           
                   888                           
                   888                           
-                          - a tool from 3ch0 8ase"
+                          - Seekr"
 
 if [ "$result" -ne 0 ]; then
 	export PATH="`pwd`:$PATH"
