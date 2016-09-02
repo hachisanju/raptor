@@ -35,6 +35,6 @@ echo "...done!"
 echo -en "Press q to exit: "
 read -r -s -n1 input
 if [[ $input = "q" ]] || [[ $input = "Q" ]]; then
-	killall afplay &
-	killall play &
+	killall afplay > /dev/null 2>&1 &
+	killall play > /dev/null 2>&1 &
 fi
