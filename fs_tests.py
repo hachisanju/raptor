@@ -1,6 +1,7 @@
 import sys
 import subprocess
-from raptor import report
+import report
+from test_result import TestResult
 
 #"mounting" provides a quick way to test which file systems are allowed to be mounted by
 #the current machine. According to the CIS benchmarks, removing support for unneeded
@@ -9,7 +10,9 @@ from raptor import report
 
 def mounting( fs ):
 
-	passedTest = True                  #Guilty until proven innocent!
+	mountingTestResult = TestResult()
+	mountingTestResult.set_total_points(1)
+	passedTest = True
 
 	print("Validating that {} support is disabled...".format(fs))
 
@@ -25,7 +28,7 @@ def mounting( fs ):
 
 		fsTest1 = subprocess.check_output(('modprobe', '-n', '-v', fs))
 		if "install /bin/true" not in fsTest1:
-			report("(X)...Support for mounting {} is not disabled.".format(fs))
+			report.report("(X)...Support for mounting {} is not disabled.".format(fs))
 			passedTest = False
 
 		#Input:
@@ -46,36 +49,46 @@ def mounting( fs ):
 				passedTest = False
 			
 	except OSError as e:                    #Catch if any of our commands fail
-		report("(!)...Tools do not support running a scan for {}".format(fs))
-		print(e)
-		passedTest = False
+		report.error("(!)...Tools do not support running a scan for {}\n".format(fs))
+		mountingTestResult.set_error(True)
+		mountingTestResult.set_error_status("      {}".format(e))
+		return mountingTestResult
 
 	#If passedTest has been set by any of the checks, the test fails
 	if passedTest == True:
-		print("......Passed!")
+		report.report("......Passed!")
+		mountingTestResult.set_points(1)
 	else:
-		print("......Failed!")
+		report.mitigation("      Mitigation: run install {} /bin/true".format(fs))
+		report.report("......Failed!")
 
+	
 	#Send up the result
-	return passedTest
+	return mountingTestResult
 
-def partition( d ):
-	passedTest = True
+def partition( d , dname ):
+
+	partitionTestResult = TestResult()
+	partitionTestResult.set_total_points(1)
+	partitionScore = 0
 	print("Validating that {} has a separate partition...".format(d))
 	try:
 		fsTest1 = subprocess.Popen(('mount'), stdout=subprocess.PIPE)
 		try:
 			fstTest1Output = subprocess.check_output(('grep', d), stdin=fsTest1.stdout)
+			partitionScore += 1
+			print("......Passed!")
 		except subprocess.CalledProcessError as e:
-			report("(X)...{} does not exist in a separate partition.".format(d))
-			passedTest = False
+			report.report("(X)...{} does not exist in a separate partition.".format(d))
+			report.mitigation("      Mitigation: run systemctl unmask {}.mount".format(dname))
+			report.mitigation("                      systemctl enable {}.mount".format(dname))
+			print("......Failed!")
+			
 
 	except OSError:
-		report("(!)...Tools do not support the use of the mount command.".format(fs))
-		passedTest = False
-	if passedTest == True:
-		print("......Passed!")
-	else:
-		print("......Failed!")
+		report.report("(!)...Tools do not support the use of the mount command.".format(fs))
 
-	return passedTest
+
+	partitionTestResult.set_points(partitionScore)
+	return partitionTestResult
+
