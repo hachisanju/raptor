@@ -18,8 +18,10 @@
 #:.......:::..:::::..:::......:::........:::
 
 
+import os
 import sys
 import getopt
+import platform
 import subprocess
 import mounting_tests
 import partition_tests
@@ -62,6 +64,7 @@ def init_test():                 #The main testing phase
 	FSTESTS = 0.0                #Total number of filesystem tests
 	FSPASS = 0.0                 #Total number of tests passed
 	
+	print platform.system()
 
 	if FILESYSTEMS == True:
 
