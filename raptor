@@ -21,6 +21,8 @@
 import sys
 import getopt
 import subprocess
+import mounting_tests
+import partition_tests
 import fs_tests
 import report
 
@@ -38,6 +40,7 @@ def main():                     #Arguments for main set the tests which are to b
 		print("       runtest       initiate a test for the system")
 		print("       -dfs          disable filesystem tests")
 		print("       -ignm         ignore mitigation advisories")
+		print("       -igne         ignore error logging")
 
 	if "-dfs" in str(sys.argv):
 		FILESYSTEMS = False
@@ -65,7 +68,7 @@ def init_test():                 #The main testing phase
 		#Tests for mountable filesystems
 		#-------------------------------
 
-		cramfsResult = fs_tests.mounting("cramfs")
+		cramfsResult = mounting_tests.run("cramfs")
 		if (cramfsResult.error == None):
 			FSTESTS += cramfsResult.totalpoints
 			FSPASS += cramfsResult.points
@@ -73,7 +76,7 @@ def init_test():                 #The main testing phase
 			report.error(cramfsResult.errorstatus)
 		report.report ("\n")
 
-		freevxfsResult = fs_tests.mounting("freevxfs")
+		freevxfsResult = mounting_tests.run("freevxfs")
 		if (freevxfsResult.error == None):
 			FSTESTS += freevxfsResult.totalpoints
 			FSPASS += freevxfsResult.points
@@ -81,7 +84,7 @@ def init_test():                 #The main testing phase
 			report.error(freevxfsResult.errorstatus)
 		report.report ("\n")
 		
-		hfsResult = fs_tests.mounting("hfs")
+		hfsResult = mounting_tests.run("hfs")
 		if (hfsResult.error == None):
 			FSTESTS += hfsResult.totalpoints
 			FSPASS += hfsResult.points
@@ -89,7 +92,7 @@ def init_test():                 #The main testing phase
 			report.error(hfsResult.errorstatus)
 		report.report ("\n")
 
-		hfsplusResult = fs_tests.mounting("hfsplus")
+		hfsplusResult = mounting_tests.run("hfsplus")
 		if (hfsplusResult.error == None):
 			FSTESTS += hfsplusResult.totalpoints
 			FSPASS += hfsplusResult.points
@@ -97,7 +100,7 @@ def init_test():                 #The main testing phase
 			report.error(hfsplusResult.errorstatus)
 		report.report ("\n")
 
-		squashfsResult = fs_tests.mounting("squashfs")
+		squashfsResult = mounting_tests.run("squashfs")
 		if (squashfsResult.error == None):
 			FSTESTS += squashfsResult.totalpoints
 			FSPASS += squashfsResult.points
@@ -105,7 +108,7 @@ def init_test():                 #The main testing phase
 			report.error(squashfsResult.errorstatus)
 		report.report ("\n")
 
-		udfResult = fs_tests.mounting("udf")
+		udfResult = mounting_tests.run("udf")
 		if (udfResult.error == None):
 			FSTESTS += udfResult.totalpoints
 			FSPASS += udfResult.points
@@ -113,7 +116,7 @@ def init_test():                 #The main testing phase
 			report.error(udfResult.errorstatus)
 		report.report ("\n")
 			
-		vfatResult = fs_tests.mounting("vfat")
+		vfatResult = mounting_tests.run("vfat")
 		if (vfatResult.error == None):
 			FSTESTS += vfatResult.totalpoints
 			FSPASS += vfatResult.points
@@ -124,7 +127,7 @@ def init_test():                 #The main testing phase
 		
 		#Tests for world-writable directories
 		#------------------------------------
-		tmpResults = fs_tests.partition("/tmp", "tmp")
+		tmpResults = partition_tests.run("/tmp", "tmp")
 		if (tmpResults.error == None):
 			FSTESTS += tmpResults.totalpoints
 			FSPASS += tmpResults.points
