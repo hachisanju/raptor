@@ -4,7 +4,7 @@ import subprocess
 import report
 from test_result import TestResult
 
-def run( d , dname ):
+def run( d , dname, full ):
 
 	partitionTestResult = TestResult()
 	partitionTestResult.set_total_points(4)

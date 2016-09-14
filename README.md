@@ -16,4 +16,6 @@ Do a full test by invoking `raptor runtest`
 Options include 
 
 `-help`: Get a printout of all available options.  
-`-dfs`: Disable FileSystem tests. They will be ignored in the report and final score.  
+`-dfs`: Disable FileSystem tests. They will be ignored in the report and final score.
+`-ignm`: Ignore mitigation advisories.
+`-igne`: Ignore error logging.

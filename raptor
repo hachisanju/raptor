@@ -58,13 +58,22 @@ def main():                     #Arguments for main set the tests which are to b
 
 
 def init_test():                 #The main testing phase
+
+	subprocess.check_output(('clear'))
 	
 	global FILESYSTEMS           #Relocalization of Global Variables
 
 	FSTESTS = 0.0                #Total number of filesystem tests
 	FSPASS = 0.0                 #Total number of tests passed
 	
-	print platform.system()
+	if "redhat" not in platform.version():
+		report.report("\nWARNING:")
+		report.report("-----------------------------------------------------------------------------------------")
+		report.report("These tests and mitigation strategies are designed to be run and implemented on CentOS 7.")
+		report.report("Using this diagnostic on another system may give some information about general security")
+		report.report("status, but this information will by no means be sufficient for any form of information")
+		report.report("gathering if used by itself.")
+		report.report("-----------------------------------------------------------------------------------------\n")
 
 	if FILESYSTEMS == True:
 
@@ -144,8 +153,6 @@ def init_test():                 #The main testing phase
 	else:
 		report.report("No tests were run successfully. Are you running on the correct operating system?")
 	
-
-
 
 
 
