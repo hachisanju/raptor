@@ -139,7 +139,7 @@ def init_test():                 #The main testing phase
 		
 		#Tests for world-writable directories
 		#------------------------------------
-		tmpResults = partition_tests.run("/tmp", "tmp")
+		tmpResults = partition_tests.run("/tmp", "tmp", True)
 		if (tmpResults.error == None):
 			FSTESTS += tmpResults.totalpoints
 			FSPASS += tmpResults.points
@@ -147,9 +147,50 @@ def init_test():                 #The main testing phase
 			report.error(tmpResults.errorstatus)
 		report.report ("\n")
 
+		varResults = partition_tests.run("/var", "var", False)
+		if (varResults.error == None):
+			FSTESTS += varResults.totalpoints
+			FSPASS += varResults.points
+		else:
+			report.error(varResults.errorstatus)
+		report.report ("\n")
+
+		varTmpResults = partition_tests.run("/var/tmp", "var/tmp", True)
+		if (varTmpResults.error == None):
+			FSTESTS += varTmpResults.totalpoints
+			FSPASS += varTmpResults.points
+		else:
+			report.error(varTmpResults.errorstatus)
+		report.report ("\n")
+
+		varLogResults = partition_tests.run("/var/log", "var/log", False)
+		if (varLogResults.error == None):
+			FSTESTS += varLogResults.totalpoints
+			FSPASS += varLogResults.points
+		else:
+			report.error(varLogResults.errorstatus)
+		report.report ("\n")
+
+		varLogAuditResults = partition_tests.run("/var/log/audit", "var/log/audit", False)
+		if (varLogAuditResults.error == None):
+			FSTESTS += varLogAuditResults.totalpoints
+			FSPASS += varLogAuditResults.points
+		else:
+			report.error(varLogAuditResults.errorstatus)
+		report.report ("\n")
+
+		homeResults = partition_tests.run("/home", "home", True)
+		if (homeResults.error == None):
+			FSTESTS += homeResults.totalpoints
+			FSPASS += homeResults.points
+		else:
+			report.error(homeResults.errorstatus)
+		report.report ("\n")
+
 	if FSTESTS != 0:
 		FSGRADE = FSPASS/FSTESTS * 100
 		print ("Filesystem overall score = {}".format(FSGRADE))
+		print ("Out of {} tests run, {} were passed.".format(FSTESTS,FSPASS))
 	else:
 		report.report("No tests were run successfully. Are you running on the correct operating system?")
 	
