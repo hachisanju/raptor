@@ -7,7 +7,10 @@ from test_result import TestResult
 def run( d , dname, full ):
 
 	partitionTestResult = TestResult()
-	partitionTestResult.set_total_points(4)
+	if full == True:
+		partitionTestResult.set_total_points(4)
+	else:
+		partitionTestResult.set_total_points(1)
 	partitionScore = 0
 	print("Validating that {} has a separate partition...".format(d))
 	try:
@@ -22,7 +25,8 @@ def run( d , dname, full ):
 			fstTest1Output = subprocess.check_output(('grep', d), stdin=fsTest1.stdout)
 			partitionScore += 1
 			print("......Passed!")
-			partitionScore += output_verification(fstTest1Output, d, dname)
+			if full == True:
+				partitionScore += output_verification(fstTest1Output, d, dname)
 			print partitionScore
 		except subprocess.CalledProcessError as e:
 			report.report("(X)...{} does not exist in a separate partition.".format(d))
@@ -73,6 +77,7 @@ def options(partition, d):
 	return result
 
 def mit(d, dname):
+	if dname == "tmp":
 			report.mitigation("      Mitigation: run systemctl unmask {}.mount".format(dname))
 			report.mitigation("                      systemctl enable {}.mount\n".format(dname))
 			report.mitigation("             Edit /etc/systemd/system/local-fs.target.wants/{}.mount to contain:".format(dname))
